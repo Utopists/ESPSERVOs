@@ -174,23 +174,24 @@ void setup() {
 	//Watch video explanation for this https://youtu.be/bvqfv-FrrLM
   //Set all servos to initial 'neutral' position
   board1.begin();
-  board2.begin();  
+  board2.begin();
+  board3.begin(); 
   board1.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
   board2.setPWMFreq(60);
+  board3.setPWMFreq(60);
   //initial position of all servos
   for(int i=0; i < maximumServo; i++) {
     if(i < 16)
     {
       board1.setPWM(i, 0, angleToPulse(allServoPosition[i]) ); 
-    if(16 < i < 31)
+    }
+    if(15 < i < 32)
     {
       board2.setPWM(i-15, 0, angleToPulse(allServoPosition[i]) );       
-    }
-    else
-    { 
-      board3.setPWM(i-30, 0, angleToPulse(allServoPosition[i]) );       
-    }
-      }
+    }else{
+      board3.setPWM(i-31, 0, angleToPulse(allServoPosition[i]) ); 
+    } 
+
   }//for end
     
     Serial.begin(115200);
@@ -236,7 +237,7 @@ void loop() {
   if(allServo ){
 
     for( int angle =servoAngleMin; angle <= servoAngleMax; angle +=servoStep){
-      for(int i=0; i<39; i++)
+      for(int i=0; i<16; i++)
         {      
             board3.setPWM(i, 0, angleToPulse(angle) );
             board2.setPWM(i, 0, angleToPulse(angle) );
@@ -263,13 +264,14 @@ void loop() {
     {
       board1.setPWM(servoNumber, 0, angleToPulse(allServoPosition[servoNumber]) ); 
     }
-    if(15 < servoNumber <32 )
+    if(15 < servoNumber < 32)
     {
-      board2.setPWM(servoNumber-15, 0, angleToPulse(allServoPosition[servoNumber]) );       
+      board2.setPWM(servoNumber-15, 0, angleToPulse(allServoPosition[servoNumber]) ); 
     }
-    else
-    {
-      board3.setPWM(servoNumber-31, 0, angleToPulse(allServoPosition[servoNumber]) ); 
+ 
+    else{
+      board3.setPWM(servoNumber-31, 0, angleToPulse(allServoPosition[servoNumber]) );       
+    }
   }
 
    buttonPushed =0; 
@@ -285,13 +287,13 @@ void loop() {
  * www.Robojax.com
  * http://youTube.com/robojaxTV
  */
-void handleServo();
+void handleServo() {
 	//Watch video explanation for this https://youtu.be/bvqfv-FrrLM
   if(server.arg("do") == "all" )
   {
     allServo =1;
-
   }else{
+
     allServo =0;    
   }
   int servoNumberRequested= server.arg("move").toInt();
@@ -368,34 +370,40 @@ void handleServo();
        for(int i=0; i < maximumServo; i++) {
         if(i < 16)
          {
+       
           board1.setPWM(i, 0, angleToPulse(allServoPosition[i]) ); 
-         }
-         if(15 < i < 31)
+         } 
+        if(15 < i <32)
          {
+
           board2.setPWM(i-15, 0, angleToPulse(allServoPosition[i]) ); 
+
+         }else{
+
+          board3.setPWM(i-31, 0, angleToPulse(allServoPosition[i]) );       
          }
-         else{
-           board3.setPWM(i-31, 0, angleToPulse(allServoPosition[i]) );       
          }
-       }  
 
   if(server.arg("do") == "rest")
-//    for(int c=0; c < 4; c++) {
   //initial position of all servos
        for(int i=0; i < maximumServo; i++) {
         if(i < 16)
          {
+       
           board1.setPWM(i, 0, angleToPulse(allServoPosition[i]) ); 
-         }
-         if(15 < i < 31)
+         } 
+        if(15 < i <32)
          {
+
           board2.setPWM(i-15, 0, angleToPulse(allServoPosition[i]) ); 
+
+         }else{
+
+          board3.setPWM(i-31, 0, angleToPulse(allServoPosition[i]) );       
          }
-         else{
-           board3.setPWM(i-31, 0, angleToPulse(allServoPosition[i]) );       
          }
-    }//for end
-    
+
+
 handleRoot();
 
 } //handleServo() end
