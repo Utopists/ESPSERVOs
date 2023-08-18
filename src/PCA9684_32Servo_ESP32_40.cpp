@@ -53,6 +53,7 @@ or make donation using PayPal http://robojax.com/L/?id=64
 Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);
 Adafruit_PWMServoDriver board2 = Adafruit_PWMServoDriver(0x41);
 Adafruit_PWMServoDriver board3 = Adafruit_PWMServoDriver(0x42);
+
 int maximumServo = 40; //how many servos are connected
 
 // Depending on your servo make, the pulse width min and max may vary, you 
@@ -95,7 +96,7 @@ int allServoPosition[] ={
       90,    90,    90,    90,    90,    90,    90,    90,//25 to 32               
       90,    90,    90,    90,    90,    90,    90,    90};//26 to 40               
 
-int servoNumber = 100;//servo to move
+int servoNumber =40;//servo to move
 int buttonPushed =0;
 int allServo =0;
 
@@ -229,7 +230,7 @@ void setup() {
   server.onNotFound(handleNotFound);
   server.begin();
   Serial.println("HTTP server started"); 	
-}
+} //void setup end
 
 void loop() {
 	server.handleClient();
@@ -246,6 +247,7 @@ void loop() {
         delay(stepDelay);
 
     }
+  
   
 // robojax PCA9865 32 channel Servo control
   delay(100);        
@@ -268,6 +270,7 @@ void loop() {
     {
       board2.setPWM(servoNumber-15, 0, angleToPulse(allServoPosition[servoNumber]) ); 
     }
+     
  
     else{
       board3.setPWM(servoNumber-31, 0, angleToPulse(allServoPosition[servoNumber]) );       
@@ -289,17 +292,31 @@ void loop() {
  */
 void handleServo() {
 	//Watch video explanation for this https://youtu.be/bvqfv-FrrLM
-  if(server.arg("do") == "all" )
+  Serial.println("handleServo()");
+  int servoNumberRequested= server.arg("move").toInt();
+  String argDo = server.arg("do");
+  String argMove = server.arg("move");
+
+  Serial.print("server.arg(\"move\"): ");
+  Serial.println(argMove);
+
+  Serial.print("server.arg(\"do\"): ");
+  Serial.println(argDo);
+
+  Serial.print("servoNumberRequested: "); //print without newline
+  Serial.println(servoNumberRequested); //print with newline
+
+  if(argDo == "all" )
   {
     allServo =1;
   }else{
 
     allServo =0;    
   }
-  int servoNumberRequested= server.arg("move").toInt();
    
    if(servoNumberRequested >=0 && servoNumberRequested < maximumServo)
     {
+ 
 
     buttonPushed = 1;
     if(allServoPosition[servoNumberRequested] == allServoMin[servoNumberRequested] ) {
@@ -310,81 +327,8 @@ void handleServo() {
     servoNumber =servoNumberRequested;
     }
 
-  if(server.arg("do") == "wave")
-      for(int c=0; c < 4; c++) {
-       for(int i=0; i < 3; i++) {
-        board1.setPWM((i), 0, angleToPulse(servoAngleMax)); 
-        board1.setPWM((i+3), 0, angleToPulse(servoAngleMin)); 
-        board1.setPWM((i+6), 0, angleToPulse(servoAngleMax)); 
-        delay(100);
-        board1.setPWM((i), 0, angleToPulse(servoRestPosition)); 
-        board1.setPWM((i+3), 0, angleToPulse(servoRestPosition)); 
-        board1.setPWM((i+6), 0, angleToPulse(servoRestPosition)); 
-        delay(100);
-        board1.setPWM((i), 0, angleToPulse(servoAngleMin)); 
-        board1.setPWM((i+3), 0, angleToPulse(servoAngleMax)); 
-        board1.setPWM((i+6), 0, angleToPulse(servoAngleMin));
-        delay(100);
-        board1.setPWM((i), 0, angleToPulse(servoRestPosition)); 
-        board1.setPWM((i+3), 0, angleToPulse(servoRestPosition)); 
-        board1.setPWM((i+6), 0, angleToPulse(servoRestPosition)); 
-        delay(100);    
-        }
-      }
-        for(int i=0; i<3; i++) {
-          board1.setPWM((i), 0, angleToPulse(servoAngleMax));
-        }
-        for(int i=0; i<3; i++) {
-          board1.setPWM((i+1), 0, angleToPulse(servoAngleMax));
-        }
-        for(int i=0; i<3; i++) {
-          board1.setPWM((i+2), 0, angleToPulse(servoAngleMax));
-        //delay(500)
-        }
 
-        delay(100);
-        for(int i=0; i<3; i++) {
-          board1.setPWM((i), 0, angleToPulse(servoRestPosition));
-        }
-        for(int i=0; i<3; i++) {
-          board1.setPWM((i+1), 0, angleToPulse(servoRestPosition));
-        }
-        for(int i=0; i<3; i++) {
-          board1.setPWM((i+2), 0, angleToPulse(servoRestPosition));
-        delay(100);
-        }
-        delay(100);
-        for(int i=0; i<3; i++) {
-          board1.setPWM((i), 0, angleToPulse(servoAngleMin));
-        }
-        for(int i=0; i<3; i++) {
-          board1.setPWM((i+1), 0, angleToPulse(servoAngleMin));
-        }
-        for(int i=0; i<3; i++) {
-          board1.setPWM((i+2), 0, angleToPulse(servoAngleMin));
-       delay(100);
-       }
-        delay(100);
-
-  //Back to rest position
-       for(int i=0; i < maximumServo; i++) {
-        if(i < 16)
-         {
-       
-          board1.setPWM(i, 0, angleToPulse(allServoPosition[i]) ); 
-         } 
-        if(15 < i <32)
-         {
-
-          board2.setPWM(i-15, 0, angleToPulse(allServoPosition[i]) ); 
-
-         }else{
-
-          board3.setPWM(i-31, 0, angleToPulse(allServoPosition[i]) );       
-         }
-         }
-
-  if(server.arg("do") == "rest")
+  if(argDo == "rest")
   //initial position of all servos
        for(int i=0; i < maximumServo; i++) {
         if(i < 16)
@@ -392,12 +336,13 @@ void handleServo() {
        
           board1.setPWM(i, 0, angleToPulse(allServoPosition[i]) ); 
          } 
-        if(15 < i <32)
+        if(16 <= i <32)
          {
 
           board2.setPWM(i-15, 0, angleToPulse(allServoPosition[i]) ); 
 
-         }else{
+         }
+         else{
 
           board3.setPWM(i-31, 0, angleToPulse(allServoPosition[i]) );       
          }
