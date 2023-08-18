@@ -303,7 +303,8 @@ void handleServo() {
   Serial.print("server.arg(\"do\"): ");
   Serial.println(argDo);
 
-  Serial.print("servoNumberRequested: "); //print without newline
+  Serial.print
+  ("servoNumberRequested: "); //print without newline
   Serial.println(servoNumberRequested); //print with newline
 
   if(argDo == "all" )
@@ -334,18 +335,20 @@ void handleServo() {
         if(i < 16)
          {
        
-          board1.setPWM(i, 0, angleToPulse(allServoPosition[i]) ); 
+          board1.setPWM(i, 0, angleToPulse(allServoPosition[i]) );
+          Serial.print (i); 
          } 
-        if(16 <= i <32)
-         {
+          if(i>15 && i<32)
+          {
 
-          board2.setPWM(i-15, 0, angleToPulse(allServoPosition[i]) ); 
-
-         }
-         else{
-
-          board3.setPWM(i-31, 0, angleToPulse(allServoPosition[i]) );       
-         }
+          board2.setPWM(i-16, 0, angleToPulse(allServoPosition[i]) ); 
+          Serial.print (i);
+        }
+          if(i>31 && i<40)       
+          {
+          board3.setPWM(i-32, 0, angleToPulse(allServoPosition[i]) );
+          Serial.print (i);       
+        }
          }
 
 
