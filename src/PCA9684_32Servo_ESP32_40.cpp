@@ -353,22 +353,23 @@ void handleServo()
     for (int i = 0; i < maximumServo; i++)
     {
       Serial.println("....REST....");
+      Serial.print("servo: ");
+      Serial.print(i);
+      Serial.print(" allServoPosition[i]: ");
+      Serial.print(allServoPosition[i]);
+      Serial.println();
       if (i < 16)
       {
-
         board1.setPWM(i, 0, angleToPulse(allServoPosition[i]));
-        Serial.print(i);
       }
       if (i > 15 && i < 32)
       {
 
         board2.setPWM(i - 16, 0, angleToPulse(allServoPosition[i]));
-        Serial.print(i);
       }
       if (i > 31 && i < 40)
       {
         board3.setPWM(i - 32, 0, angleToPulse(allServoPosition[i]));
-        Serial.print(i);
       }
       buttonPushed = 0;
     }
