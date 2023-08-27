@@ -308,7 +308,7 @@ void handleServo()
 {
   // Watch video explanation for this https://youtu.be/bvqfv-FrrLM
   Serial.println("handleServo()");
-  int servoNumberRequested = server.arg("move").toInt();
+  int servoNumber = server.arg("move").toInt();
   String argDo = server.arg("do");
   String argMove = server.arg("move");
 
@@ -318,14 +318,12 @@ void handleServo()
   Serial.print("server.arg(\"do\"): ");
   Serial.println(argDo);
 
-  Serial.print("servoNumberRequested: "); // print without newline
-  Serial.println(servoNumberRequested);   // print with newline
+  Serial.print("servoNumber: "); // print without newline
+  Serial.println(servoNumber);   // print with newline
 
   if (argDo == "all")
-
   {
     Serial.println("....ALL....");
-
     allServo = 1;
   }
   else
@@ -333,22 +331,23 @@ void handleServo()
     allServo = 0;
   }
 
-  if (servoNumberRequested >= 0 && servoNumberRequested < maximumServo)
+  // argMove
+  if (servoNumber >= 0 && servoNumber < maximumServo)
   {
-
     buttonPushed = 1;
-    if (allServoPosition[servoNumberRequested] == allServoMin[servoNumberRequested])
+
+    // restrict the servoPosition to be in the range between [min, max]
+    if (allServoPosition[servoNumber] < allServoMin[servoNumber])
     {
-      allServoPosition[servoNumberRequested] = allServoMax[servoNumberRequested];
+      allServoPosition[servoNumber] = allServoMin[servoNumber];
     }
-    else
+    if (allServoPosition[servoNumber] > allServoMax[servoNumber])
     {
-      allServoPosition[servoNumberRequested] = allServoMin[servoNumberRequested];
+      allServoPosition[servoNumber] = allServoMax[servoNumber];
     }
-    servoNumber = servoNumberRequested;
   }
 
-  if (argDo == "rest")
+  if (argDo == "rest"){
     // initial position of all servos
     for (int i = 0; i < maximumServo; i++)
     {
@@ -373,6 +372,7 @@ void handleServo()
       }
       buttonPushed = 0;
     }
+  }
 
   handleRoot();
 
