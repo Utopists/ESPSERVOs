@@ -1,0 +1,11 @@
+https://esp32.com/viewtopic.php?t=3315
+#include "driver/periph_ctrl.h"
+void reset_i2c(void){
+
+	i2c_reset_tx_fifo(I2C_N);
+	i2c_reset_rx_fifo(I2C_N);
+	periph_module_disable(PERIPH_I2C0_MODULE);
+	periph_module_enable(PERIPH_I2C0_MODULE);
+	i2c_driver_delete(I2C_N);
+	init_I2C();
+}
