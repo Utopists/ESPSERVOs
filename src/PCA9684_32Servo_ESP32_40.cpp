@@ -46,7 +46,6 @@ or make donation using PayPal http://robojax.com/L/?id=64
  */
 ////////////////////// PCA9685 settings started
 #include <Wire.h>
-
 #include <Adafruit_PWMServoDriver.h>
 
 // called this way, it uses the default address 0x40
@@ -54,8 +53,9 @@ Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);
 Adafruit_PWMServoDriver board2 = Adafruit_PWMServoDriver(0x41);
 Adafruit_PWMServoDriver board3 = Adafruit_PWMServoDriver(0x42);
 
-int maximumServo = 1; // how many servos are connected
-
+int maximumServo = 32; // how many servos are connected
+#define I2C_SDA 21
+#define I2C_SCL 22
 // Depending on your servo make, the pulse width min and max may vary, you
 // want these to be as small/large as possible without hitting the hard stop
 // for max range. You'll have to tweak them as necessary to match the servos you
@@ -106,7 +106,8 @@ void handleServo();        // this is prototype of function defined at the end o
 int angleToPulse(int ang); // this is prototype of function defined at the end of this code
 ////////////////////////PCA9685 ended
 
-#include "PCA9684_32Servo_ESP32.h"
+#include <PCA9684_32Servo_ESP32.h>
+//#include <Adafruit_PWMServoDriver.h>//added instead of above
 
 #include <WiFi.h>
 #include <WiFiClient.h>
@@ -192,21 +193,23 @@ void setup()
       Serial.print("Servo i");
       Serial.print(i);
       Serial.println(allServoPosition[i]);
-      //      board1.setPWM(i, 0, angleToPulse(allServoPosition[i]) );
+      board1.setPWM(i, 0, angleToPulse(allServoPosition[i]) ); 
+      //original with i
     }
     if (15 < i < 32)
     {
-      board2.setPWM(i - 15, 0, angleToPulse(allServoPosition[i]));
+      board2.setPWM(i - 15, 0, angleToPulse(servoRestPosition));
     }
     else
     {
-      board3.setPWM(i - 31, 0, angleToPulse(allServoPosition[i]));
+      board3.setPWM(i - 31, 0, angleToPulse(servoRestPosition));
     }
 
   } // for initial pos end
 
   Serial.begin(115200);
-  Serial.println("32 channel Servo test!");
+  Wire.begin (I2C_SDA, I2C_SCL); 
+  Serial.println("40 channel Servo test!");
 
   // Servo control using ESP32 from Robojax.com
 
@@ -249,11 +252,12 @@ void loop()
   {
     for (int angle = servoAngleMin; angle <= servoAngleMax; angle += servoStep)
     {
+      Serial.println("ALL SERVOS");
       for (int i = 0; i < 40; i++)
       {
-        board3.setPWM(i, 0, angleToPulse(angle));
-        board2.setPWM(i, 0, angleToPulse(angle));
-        board1.setPWM(i, 0, angleToPulse(angle));
+       board1.setPWM(i, 0, angleToPulse(angle));
+       board2.setPWM(i, 0, angleToPulse(angle));
+       board3.setPWM(i, 0, angleToPulse(angle));
       }
       delay(stepDelay);
     }
@@ -275,20 +279,17 @@ void loop()
   {
     if (servoNumber < 16)
     {
+      Serial.println("Board 1");
       board1.setPWM(servoNumber, 0, angleToPulse(allServoPosition[servoNumber]));
-      Serial.print(buttonPushed);
-      Serial.println("....SERV....");
-
-      Serial.print(servoNumber);
-      Serial.println(allServoPosition[servoNumber]);
-      delay(500);
     }
     if (15 < servoNumber < 32)
     {
+      Serial.println("Board 2");
       board2.setPWM(servoNumber - 15, 0, angleToPulse(allServoPosition[servoNumber]));
     }
     else
     {
+      Serial.println("Board 3");
       board3.setPWM(servoNumber - 31, 0, angleToPulse(allServoPosition[servoNumber]));
     }
   }
@@ -359,15 +360,17 @@ void handleServo()
       Serial.println();
       if (i < 16)
       {
+        Serial.println("Board 1");
         board1.setPWM(i, 0, angleToPulse(allServoPosition[i]));
       }
       if (i > 15 && i < 32)
       {
-
+        Serial.println("Board 2");
         board2.setPWM(i - 16, 0, angleToPulse(allServoPosition[i]));
       }
       if (i > 31 && i < 40)
       {
+        Serial.println("Board 3");
         board3.setPWM(i - 32, 0, angleToPulse(allServoPosition[i]));
       }
       buttonPushed = 0;
@@ -386,10 +389,10 @@ void handleServo()
 int angleToPulse(int ang)
 {
   int pulse = map(ang, 0, 180, SERVOMIN, SERVOMAX); // map angle of 0 to 180 to Servo min and Servo max
-  Serial.print("Angle: ");
-  Serial.print(ang);
-  Serial.print(" pulse: ");
-  Serial.println(pulse);
+//  Serial.print("Angle: ");
+//  Serial.print(ang);
+//  Serial.print(" pulse: ");
+//  Serial.println(pulse);
   return pulse;
 
 } // for end
