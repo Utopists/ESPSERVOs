@@ -65,13 +65,12 @@ int maximumServo = 40; // how many servos are connected
 // #define SERVOMAX  575 // this is the 'maximum' pulse length count (out of 4096)
 #define SERVOMIN 125 // this is the 'minimum' pulse length count (out of 4096)
 #define SERVOMAX 575 // this is the 'maximum' pulse length count (out of 4096)
-//Alternatives from github post to research
-//#define SERVOMIN 102   // ( 500 / 20000 ) * 4096
-//#define SERVOMID 307   // ( 1500 / 20000 ) * 4096
-//#define SERVOMAX 491   // ( 2500 / 20000 ) * 4096
-//#define USMIN  500
-//#define USMAX 2500
-
+// Alternatives from github post to research
+// #define SERVOMIN 102   // ( 500 / 20000 ) * 4096
+// #define SERVOMID 307   // ( 1500 / 20000 ) * 4096
+// #define SERVOMAX 491   // ( 2500 / 20000 ) * 4096
+// #define USMIN  500
+// #define USMAX 2500
 
 int servoAngle = 90;
 int servoStep = 8;
@@ -114,7 +113,7 @@ int angleToPulse(int ang); // this is prototype of function defined at the end o
 ////////////////////////PCA9685 ended
 
 #include <PCA9684_32Servo_ESP32.h>
-//#include <Adafruit_PWMServoDriver.h>//an alternative suggestion
+// #include <Adafruit_PWMServoDriver.h>//an alternative suggestion
 
 #include <WiFi.h>
 #include <WiFiClient.h>
@@ -194,16 +193,16 @@ void setup()
   // initial position of all servos
   for (int i = 0; i < maximumServo; i++)
   {
-      Serial.print("Servo No. ");
-      Serial.print(i);
-      Serial.print("Position");
-      Serial.println(allServoPosition[i]);
+    Serial.print("Servo No. ");
+    Serial.print(i);
+    Serial.print("Position");
+    Serial.println(allServoPosition[i]);
 
     if (i < 16)
     {
       Serial.print("Set up Board 1");
-      board1.setPWM(i, 0, angleToPulse(allServoPosition[i]) ); 
-      //original with i
+      board1.setPWM(i, 0, angleToPulse(allServoPosition[i]));
+      // original with i
     }
     if (15 < i < 32)
     {
@@ -219,7 +218,7 @@ void setup()
   } // for initial pos end
 
   Serial.begin(115200);
-  Wire.begin (I2C_SDA, I2C_SCL); 
+  Wire.begin(I2C_SDA, I2C_SCL);
   Serial.println("40 channel Servo test!");
 
   // Servo control using ESP32 from Robojax.com
@@ -255,8 +254,9 @@ void setup()
   Serial.println("HTTP server started");
 } // void setup end
 
-void loop(){
-server.handleClient();
+void loop()
+{
+  server.handleClient();
   // CODE for ALLSERVO button push
   if (allServo)
   {
@@ -265,15 +265,15 @@ server.handleClient();
       Serial.println("ALL SERVOS");
       for (int i = 0; i < 40; i++)
       {
-       Serial.println("All Servos board 1");
-       Serial.println(angleToPulse(angle));
-       //board1.setPWM(i, 0, angleToPulse(angle));
-       Serial.println("All Servos board 2");
-       Serial.println(angleToPulse(angle));
-       board2.setPWM(i, 0, angleToPulse(angle));
-       Serial.println("All Servos board 3");
-       Serial.println(angleToPulse(angle));
-       //board3.setPWM(i, 0, angleToPulse(angle));
+        Serial.println("All Servos board 1");
+        Serial.println(angleToPulse(angle));
+        board1.setPWM(i, 0, angleToPulse(angle));
+        Serial.println("All Servos board 2");
+        Serial.println(angleToPulse(angle));
+        board2.setPWM(i, 0, angleToPulse(angle));
+        Serial.println("All Servos board 3");
+        Serial.println(angleToPulse(angle));
+        board3.setPWM(i, 0, angleToPulse(angle));
       }
       delay(stepDelay);
       Serial.println("All Servo delay");
@@ -292,29 +292,30 @@ server.handleClient();
   }
 
   // CODE for individual SERV button push
-  if (buttonPushed && (servoNumber >= 0 && servoNumber < maximumServo)) {
+  if (buttonPushed && (servoNumber >= 0 && servoNumber < maximumServo))
+  {
     if (servoNumber < 16)
-     {
+    {
       Serial.println("Individual Servo Board 1");
       Serial.println(servoNumber);
 
-//      board1.setPWM(servoNumber, 0, angleToPulse(allServoPosition[servoNumber]));
-     }
+      board1.setPWM(servoNumber, 0, angleToPulse(allServoPosition[servoNumber]));
+    }
     if (15 < servoNumber < 32)
-     {
+    {
       Serial.println("Individual Servos Board 2");
       Serial.println(servoNumber);
 
       board2.setPWM(servoNumber - 15, 0, angleToPulse(allServoPosition[servoNumber]));
-     }
+    }
     else
-     {
+    {
       Serial.println("Individual Servo Board 3");
       Serial.print("Individual Servo ");
       Serial.println(servoNumber);
 
-//      board3.setPWM(servoNumber - 31, 0, angleToPulse(allServoPosition[servoNumber]));
-     }
+      board3.setPWM(servoNumber - 31, 0, angleToPulse(allServoPosition[servoNumber]));
+    }
   }
 
   buttonPushed = 0;
@@ -369,10 +370,10 @@ void handleServo()
     {
       allServoPosition[servoNumber] = allServoMax[servoNumber];
     }
-    
   }
 
-  if (argDo == "rest"){
+  if (argDo == "rest")
+  {
     // initial position of all servos
     for (int i = 0; i < maximumServo; i++)
     {
@@ -385,7 +386,7 @@ void handleServo()
       if (i < 16)
       {
         Serial.println("Board 1");
-//        board1.setPWM(i, 0, angleToPulse(allServoPosition[i]));
+        board1.setPWM(i, 0, angleToPulse(allServoPosition[i]));
       }
       if (i > 15 && i < 32)
       {
@@ -395,7 +396,7 @@ void handleServo()
       if (i > 31 && i < 40)
       {
         Serial.println("Board 3");
-//        board3.setPWM(i - 32, 0, angleToPulse(allServoPosition[i]));
+        board3.setPWM(i - 32, 0, angleToPulse(allServoPosition[i]));
       }
       buttonPushed = 0;
     }
@@ -413,10 +414,10 @@ void handleServo()
 int angleToPulse(int ang)
 {
   int pulse = map(ang, 0, 180, SERVOMIN, SERVOMAX); // map angle of 0 to 180 to Servo min and Servo max
-//  Serial.print("Angle: ");
-//  Serial.print(ang);
-//  Serial.print(" pulse: ");
-//  Serial.println(pulse);
+                                                    //  Serial.print("Angle: ");
+                                                    //  Serial.print(ang);
+                                                    //  Serial.print(" pulse: ");
+                                                    //  Serial.println(pulse);
   return pulse;
 
 } // for end

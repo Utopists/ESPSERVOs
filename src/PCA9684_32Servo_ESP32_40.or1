@@ -46,7 +46,7 @@ or make donation using PayPal http://robojax.com/L/?id=64
  */
 ////////////////////// PCA9685 settings started
 #include <Wire.h>
-
+#include <SPI.h>
 #include <Adafruit_PWMServoDriver.h>
 
 // called this way, it uses the default address 0x40
@@ -106,20 +106,8 @@ int angleToPulse(int ang); //this is prototype of function defined at the end of
 #include "PCA9684_32Servo_ESP32.h"
   
 #include <WiFi.h>
-#include <WiFiClient.h>
-#include <WebServer.h>
-#include <ESPmDNS.h>
-
-const char* ssid = "BT-THAJX6";
-const char* pass = "JdakXJ3AQHFLeP";
-
-WebServer server(80);
-
-const int led = 13;
-
-
-
-/////////////////////////////////////
+const char *ssid = "BT-THAJX6";
+const char *pass = "JdakXJ3AQHFLeP";
 void handleRoot() {
 //Watch video explanation for this https://youtu.be/bvqfv-FrrLM
 String HTML_page = pageHeader_p1; 
@@ -198,8 +186,10 @@ void setup() {
 	
 
   //Servo control using ESP32 from Robojax.com
-
+  
+  Serial.println("begining connection routine");
   WiFi.mode(WIFI_STA);
+  WiFi.setSleep(false);
   WiFi.begin(ssid, pass);
   Serial.println("");
   
@@ -231,9 +221,10 @@ void setup() {
 }
 
 void loop()
-	server.handleClient();
+{
+server.handleClient();
 //CODE for ALLSERVO button push
-  if(allServo ){
+   if(allServo ){
 
     for( int angle =servoAngleMin; angle <= servoAngleMax; angle +=servoStep){
       for(int i=0; i<39; i++)
@@ -287,6 +278,8 @@ void loop()
  * http://youTube.com/robojaxTV
  */
 void handleServo()
+
+ {
 	//Watch video explanation for this https://youtu.be/bvqfv-FrrLM
   if(server.arg("do") == "all" )
   {
@@ -309,7 +302,7 @@ void handleServo()
     servoNumber =servoNumberRequested;
     }
 
-  if(server.arg("do") == "wave")
+  if(server.arg("do") == "wave"){
       for(int c=0; c < 4; c++) {
        for(int i=0; i < 3; i++) {
         board1.setPWM((i), 0, angleToPulse(servoAngleMax)); 
@@ -396,6 +389,7 @@ void handleServo()
            board3.setPWM(i-31, 0, angleToPulse(allServoPosition[i]) );       
          }
     }//for end
+  }
     
 handleRoot();
 

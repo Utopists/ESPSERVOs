@@ -46,14 +46,16 @@ or make donation using PayPal http://robojax.com/L/?id=64
  */
 ////////////////////// PCA9685 settings started
 #include <Wire.h>
-
+#include <SPI.h>
 #include <Adafruit_PWMServoDriver.h>
 
 // called this way, it uses the default address 0x40
 Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);
-//Adafruit_PWMServoDriver board2 = Adafruit_PWMServoDriver(0x41);
-int maximumServo = 3;//how many servos are connected
-
+Adafruit_PWMServoDriver board2 = Adafruit_PWMServoDriver(0x41);
+Adafruit_PWMServoDriver board3 = Adafruit_PWMServoDriver(0x42);
+int maximumServo = 32;//how many servos are connected
+#define I2C_SDA 21
+#define I2C_SCL 22
 // Depending on your servo make, the pulse width min and max may vary, you 
 // want these to be as small/large as possible without hitting the hard stop
 // for max range. You'll have to tweak them as necessary to match the servos you
@@ -62,33 +64,38 @@ int maximumServo = 3;//how many servos are connected
 #define SERVOMIN  125 // this is the 'minimum' pulse length count (out of 4096)
 #define SERVOMAX  575 // this is the 'maximum' pulse length count (out of 4096)
 
-int servoAngle =0;
-int servoStep = 10;
+int servoAngle =90;
+int servoStep = 8;
 
 int stepDelay = 50;// 50 milliseconds
-int servoAngleMin =0;
-int servoAngleMax = 150;
+int servoAngleMin =70;
+int servoAngleMax = 110;
 
 // minimum angle of each servo     
 int allServoMin[]={
-      0,    0,    0,    0,    0,    0,    0,    0,// 1 to 8
-      0,    0,    0,    0,    0,    0,    0,    0,//9 to 16
-      0,    0,    0,    0,    0,    0,    0,    0,//17 to 24
-      0,    0,    0,    0,    0,    0,    0,    0};//25 to 32                   
+    70, 70, 70, 70, 70, 70, 70, 70,  // 1 to 8
+    70, 70, 70, 70, 70, 70, 70, 70,  // 9 to 16
+    70, 70, 70, 70, 70, 70, 70, 70,  // 17 to 24
+    70, 70, 70, 70, 70, 70, 70, 70,  // 25 to 32
+    70, 70, 70, 70, 70, 70, 70, 70}; // 26 to 40
+              
 
 //maximum value of each servo
 int allServoMax[]={
-      120,    120,    120,    120,    120,    120,    120,    120,// 1 to 8 
-      180,    180,    180,    180,    180,    180,    180,    180,//9 to 16
-      180,    180,    180,    180,    180,    180,    180,    180,//17 to 24 
-      180,    180,    180,    180,    180,    180,    180,    180};//25 to 32 
+    110, 110, 110, 110, 110, 110, 110, 110,  // 1 to 8
+    110, 110, 110, 110, 110, 110, 110, 110,  // 9 to 16
+    110, 110, 110, 110, 110, 110, 110, 110,  // 17 to 24
+    110, 110, 110, 110, 110, 110, 110, 110,  // 25 to 32
+    110, 110, 110, 110, 110, 110, 110, 110}; // 26 to 40
 
 // initial position of servos      
 int allServoPosition[] ={
-      90,    90,    90,    90,    90,    90,    90,    90,// 1 to 8
-      0,    0,    0,    0,    0,    0,    0,    0,//9 to 16
-      0,    0,    0,    0,    0,    0,    0,    0,//17 to 24
-      0,    0,    0,    0,    0,    0,    0,    0};//25 to 32               
+    90, 90, 90, 90, 90, 90, 90, 90,  // 1 to 8
+    90, 90, 90, 90, 90, 90, 90, 90,  // 9 to 16
+    90, 90, 90, 90, 90, 90, 90, 90,  // 17 to 24
+    90, 90, 90, 90, 90, 90, 90, 90,  // 25 to 32
+    90, 90, 90, 90, 90, 90, 90, 90}; // 26 to 40
+        
 
 int servoNumber = 100;//servo to move
 int buttonPushed =0;
@@ -104,9 +111,9 @@ int angleToPulse(int ang); //this is prototype of function defined at the end of
 #include <WiFiClient.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
-
-const char* ssid = "BT_THAJX6";
-const char* pass = "JdakXJ3AQHFLeP";
+#define CONNECTION_TIMEOUT 10
+const char *ssid = "BT_THAJX6";
+const char *pass = "JdakXJ3AQHFLeP";
 
 WebServer server(80);
 
@@ -115,85 +122,115 @@ const int led = 13;
 
 
 /////////////////////////////////////
-void handleRoot() {
-//Watch video explanation for this https://youtu.be/bvqfv-FrrLM
-String HTML_page = pageHeader_p1; 
+void handleRoot()
+{
+  // Watch video explanation for this https://youtu.be/bvqfv-FrrLM
+  String HTML_page = pageHeader_p1;
 
- if(allServo)
- {
- HTML_page.concat("<div class=\"btn\"><a class=\"angleButton colorAll\"  href=\"/servo?do=stop\">Stop Servo</a></div>");  
+  if (allServo)
+  {
+    HTML_page.concat("<div class=\"btn\"><a class=\"angleButton colorAll\"  href=\"/servo?do=stop\">Stop Servo</a></div>");
+  }
+  else
+  {
+    HTML_page.concat("<div class=\"btn\"><a class=\"angleButton colorAll\"  href=\"/servo?do=all\">All Servos</a></div>");
+  }
+  HTML_page.concat("<br/>");
+  for (int i = 0; i < maximumServo; i++)
+  {
+    HTML_page.concat("<div class=\"btn\"><a class=\"angleButton colorBtn\"  href=\"/servo?move=");
+    HTML_page.concat(i);
+    HTML_page.concat("\">SRV ");
+    HTML_page.concat(i + 1);
+    HTML_page.concat("</a></div>");
+  }
+  HTML_page.concat("<br/>");
+  HTML_page.concat("<div class=\"btn\"><a class=\"angleButton colorAll\"  href=\"/servo?do=wave\">Wave</a></div>");
 
- }else{
- HTML_page.concat("<div class=\"btn\"><a class=\"angleButton colorAll\"  href=\"/servo?do=all\">All Servo</a></div>");    
- }
+  HTML_page.concat("<div class=\"btn\"><a class=\"angleButton colorAll\"  href=\"/servo?do=rest\">Rest</a></div>");
 
- for (int i=0; i < maximumServo; i++)
- {
-  HTML_page.concat("<div class=\"btn\"><a class=\"angleButton colorBtn\"  href=\"/servo?move="); 
-  HTML_page.concat(i);  
-  HTML_page.concat("\">SRV ");      
-  HTML_page.concat(i+1);  
-  HTML_page.concat(" </a></div>");  
- }
- 
   HTML_page.concat("</body>\n</html>");
   server.send(200, "text/html", HTML_page);
+}
 
-
-  }
-void handleNotFound() {
+void handleNotFound()
+{
   digitalWrite(led, 1);
-  String message = "File Not Found";
-  message += "URI:";
+  String message = "File Not Found\n\n";
+  message += "URI: ";
   message += server.uri();
-  message += " ";
-Method: " ";
+  message += "\nMethod: ";
   message += (server.method() == HTTP_GET) ? "GET" : "POST";
-  message += " ";
-Arguments: ;
+  message += "\nArguments: ";
   message += server.args();
-  message += " ";
+  message += "\n";
 
-  for (uint8_t i = 0; i < server.args(); i++) {
-    message += " " + server.argName(i) + ": " + server.arg(i) + " ";
+  for (uint8_t i = 0; i < server.args(); i++)
+  {
+    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
   }
 
   server.send(404, "text/plain", message);
   digitalWrite(led, 0);
 }
 
-
-void setup() {
-	//Watch video explanation for this https://youtu.be/bvqfv-FrrLM
+void setup()
+{
+  // Watch video explanation for this https://youtu.be/bvqfv-FrrLM
+  // Set all servos to initial 'neutral' position
   board1.begin();
-//  board2.begin();  
-  board1.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
-//  board2.setPWMFreq(60);
-  //initial position of all servos
-  for(int i=0; i < maximumServo; i++) {
-    if(i < 16)
-    {
-      board1.setPWM(i, 0, angleToPulse(allServoPosition[i]) ); 
-    }else{
- //     board2.setPWM(i-15, 0, angleToPulse(allServoPosition[i]) );       
-    }
-  }//for end
-    
-    Serial.begin(115200);
-    Serial.println("32 channel Servo test!");
-	
+  board2.begin();
+  board3.begin();
+  board1.setPWMFreq(50); // Analog servos run at ~60 Hz updates
+  board2.setPWMFreq(50);
+  board3.setPWMFreq(50);
+  // initial position of all servos
+  for (int i = 0; i < maximumServo; i++)
+  {
+      Serial.print("Servo No. ");
+      Serial.print(i);
+      Serial.print("Position");
+      Serial.println(allServoPosition[i]);
 
-  //Servo control using ESP32 from Robojax.com
+    if (i < 16)
+    {
+      Serial.print("Set up Board 1");
+      board1.setPWM(i, 0, angleToPulse(allServoPosition[i]) ); 
+      //original with i
+    }
+    if (15 < i < 32)
+    {
+      Serial.print("Set up Board 2");
+      board2.setPWM(i - 15, 0, angleToPulse(allServoPosition[i]));
+    }
+    else
+    {
+      Serial.print("Set up Board 3");
+      board3.setPWM(i - 31, 0, angleToPulse(allServoPosition[i]));
+    }
+
+  } // for initial pos end
+
+  Serial.begin(115200);
+  Wire.begin (I2C_SDA, I2C_SCL); 
+  Serial.println("40 channel Servo test!");
+
+  // Servo control using ESP32 from Robojax.com
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, pass);
   Serial.println("");
-  
-    
+  int timeout_counter = 0;
   // Wait for connection
-  while (WiFi.status() != WL_CONNECTED) {
+  while (WiFi.status() != WL_CONNECTED)
+  {
     delay(500);
+    int status = WL_IDLE_STATUS;
     Serial.print(".");
+    timeout_counter++;
+    if(timeout_counter >= CONNECTION_TIMEOUT*5){
+    ESP.restart();
+    }    
   }
 
   Serial.println("");
@@ -202,19 +239,19 @@ void setup() {
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 
-
-  if (MDNS.begin("robojaxESP32")) {
+  if (MDNS.begin("robojaxESP32"))
+  {
     Serial.print("MDNS responder started at http://");
     Serial.println("robojaxESP32");
   }
 
   server.on("/", handleRoot);
-  server.on("/servo", HTTP_GET, handleServo);  
+  server.on("/servo", HTTP_GET, handleServo);
 
   server.onNotFound(handleNotFound);
   server.begin();
-  Serial.println("HTTP server started"); 	
-}
+  Serial.println("HTTP server started");
+} // void setup end
 
 void loop() {
 	server.handleClient();
@@ -224,8 +261,9 @@ void loop() {
       for(int i=0; i<16; i++)
         {      
               
-//            board2.setPWM(i, 0, angleToPulse(angle) );
             board1.setPWM(i, 0, angleToPulse(angle) );
+            board2.setPWM(i, 0, angleToPulse(angle) );
+            board3.setPWM(i, 0, angleToPulse(angle) );
         }
         delay(stepDelay);
     }
@@ -247,9 +285,9 @@ void loop() {
     {
      board1.setPWM(servoNumber, 0, angleToPulse(allServoPosition[servoNumber]) ); 
     }else{
-//      board2.setPWM(servoNumber-15, 0, angleToPulse(allServoPosition[servoNumber]) );       
+     board2.setPWM(servoNumber-15, 0, angleToPulse(allServoPosition[servoNumber]) );       
     }
-  }
+   }
 
    buttonPushed =0; 
 }

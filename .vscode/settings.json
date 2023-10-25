@@ -2,5 +2,5 @@
     "githubPullRequests.remotes": [
         "origin"
     ],
-    "cmake.sourceDirectory": "/home/utopistmaker/PlatformIO/Projects/ESPSERVOs/.pio/libdeps/esp32dev/Unity"
+    "cmake.sourceDirectory": "/home/utopistmaker/ESP32SERVOs/ESPSERVOs/.pio/libdeps/esp32dev/Adafruit BusIO"
 }
