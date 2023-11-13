@@ -1,0 +1,28 @@
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+    const int NUM_COLUMNS = 8;
+    const int NUM_ROWS = 5;
+
+
+    for (int row=0; row < NUM_ROWS; row++){
+        for (int column=0; column < NUM_COLUMNS; column++){
+        //board = [1, 2, 3]
+            int board = row / 2 +1 ;
+            //int index = column + (row % 2) * NUM_COLUMNS;
+           int index = column + row * NUM_COLUMNS;
+           cout << "column: " << column << " row: " << row;
+           cout << " board: " << board << " index: " << index;
+           cout << "\n";
+        }//column
+    }//row
+}

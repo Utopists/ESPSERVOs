@@ -1,0 +1,40 @@
+// Online C++ compiler to run C++ program online
+#include <iostream>
+int main() {
+    int Servo=0;
+    // Write C++ code here
+    for (int v =0; v<40 ; v+=8)
+    { 
+     
+      std::cout << "v=";
+      std::cout << v;
+      std::cout << "\n";
+    
+     
+     for (int h=0 ;h<8 ; ++h)
+     {
+         std::cout << "h=";
+         std::cout << h;
+         std::cout << "\n";
+         Servo=h+v;
+         std::cout << "Servo";
+         std::cout << Servo;
+         std::cout << "\n";
+         if (Servo < 16)
+         { 
+             std::cout << "Board 1";
+             std::cout << "\n";
+         }
+         if (Servo > 15 && Servo <32)
+         {
+             std::cout <<"Board 2";
+             std::cout << "\n";
+         }
+         if (Servo > 31)
+         {
+             std::cout <<"Board 3";
+             std::cout << "\n";
+         }
+         }
+         }
+     }

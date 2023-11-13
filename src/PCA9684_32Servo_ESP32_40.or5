@@ -74,7 +74,7 @@ int maximumServo = 40; // how many servos are connected
 
 
 int servoAngle = 100;
-int servoStep = 10;
+int servoStep = 80;
 
 int stepDelay = 20; // 50 milliseconds
 int servoAngleMin = 50;
@@ -123,10 +123,6 @@ int angleToPulse(int ang); // this is prototype of function defined at the end o
 
 const char *ssid = "BT-THAJX6";
 const char *pass = "JdakXJ3AQHFLeP";
-
-
-//const char *ssid = "Ardvark";
-//const char *pass = "InstituteofEducation";
 
 WebServer server(80);
 
@@ -206,17 +202,18 @@ void setup()
   board2.setPWMFreq(50);
   board3.begin();
   board3.setPWMFreq(50);
-// initial position of all servos
- for (int i = 0; i < maximumServo; i++)
+  // initial position of all servos
+ // for (int i = 0; i < maximumServo; i++)
   
 //      Serial.print("Servo No. ");
 //      Serial.print(i);
-//      Serial.print("Position");
+ //     Serial.print("Position");
 //      Serial.println(allServoPosition[i]);
+
 
   for (int i = 0; i < 16; i++)
 
-    if (i < 16)
+//    if (i < 16)
     {
       Serial.println("Set up Board 1");
       Serial.print("Servo: ");
@@ -227,7 +224,7 @@ void setup()
     }
   for (int i = 16; i < 32; i++)
 
-    if (15 < i < 32)
+//    if (15 < i < 32)
     {
       Serial.println("Set up Board 2");
       Serial.println("Servo: ");
@@ -298,8 +295,8 @@ void loop()
       Serial.println("ALL SERVOS");
       for (int i = 0; i < 40; i++)
       {
-       Serial.print("Servo:");
-       Serial.println(i);
+        Serial.print("Servo:");
+        Serial.println(i);
 
        Serial.println("All Servos board 1");
        Serial.println(angleToPulse(angle));
@@ -429,17 +426,17 @@ void handleServo()
     if (servoNumberRequested < 16)
       {
         Serial.println("Board 1");
-        board1.setPWM(servoNumberRequested, 0, angleToPulse(servoRestPosition));
+        board1.setPWM(servoNumberRequested, 0, angleToPulse(100));
       }
       if (servoNumberRequested > 15 && servoNumberRequested < 32)
       {
         Serial.println("Board 2");
-        board2.setPWM(servoNumberRequested, 0, angleToPulse(servoRestPosition));
+        board2.setPWM(servoNumberRequested, 0, angleToPulse(100));
       }
       if (servoNumberRequested  > 31 && servoNumberRequested  < 40)
       {
         Serial.println("Board 3");
-        board3.setPWM(servoNumberRequested, 0, angleToPulse(servoRestPosition));
+        board3.setPWM(servoNumberRequested, 0, angleToPulse(100));
       }
       buttonPushed = 0;
   }
@@ -539,39 +536,56 @@ void handleServo()
     if (argDo == "ver"){
     // Vertical
     Serial.println("Verticals");
+    int Flapper=0;
+    int h=0;
+    int v=0;
+
+//    delay(100);
+      delay(50);
+    for (v = 0; v < 8; ++v)
     {
-    const int NUM_COLUMNS = 8;
-    const int NUM_ROWS = 5;
-
-for (int column=0; column < NUM_COLUMNS; column++){
-    Serial.println(column);
-    for (int row=0; row < NUM_ROWS; row++){
-        //board = [1, 2, 3]
-            int board = row / 2 +1 ;
-            //int index = column + (row % 2) * NUM_COLUMNS;
-           int index = column + row * NUM_COLUMNS;
-
-      if (board = 1) {
-         board1.setPWM(index, 0, angleToPulse(allServoMin[index]+5));
-         delay(30);
-         board1.setPWM(index, 0, angleToPulse(allServoMax[index]));
-         }
-      if (board = 2) {
-         board2.setPWM(index, 0, angleToPulse(allServoMin[index]+5));
-         delay(30);
-         board2.setPWM(index, 0, angleToPulse(allServoMax[index]));
-         }
-      if (board = 3) {
-         board3.setPWM(index, 0, angleToPulse(allServoMin[index]+5));
-         delay(30);
-         board3.setPWM(index, 0, angleToPulse(allServoMax[index]));
-         }
-         Serial.print(index);
-         delay(100);
+      Serial.print("For v=");
+      Serial.println(v);
     
-     }//column
-        }//row
-    }
+      delay(100);
+
+     for (h = 0; h < 41 ; h=h+8)
+     {
+      Serial.print("For h= ");
+      Serial.println(h);
+      Flapper = h+v;
+      if (Flapper < 16)
+       {
+       Serial.print("For h= ");
+       Serial.println(h);
+       Serial.println("Board_1"); 
+       Serial.print("Flapper ");
+       Serial.println(Flapper);
+
+       board1.setPWM(Flapper, 0, angleToPulse(allServoMin[Flapper]));
+       }
+       if (Flapper>15 && Flapper<32)
+       { 
+       Serial.print("h=");
+       Serial.println(h);
+       Serial.println("Board_2"); 
+       Serial.print("Flapper ");
+       Serial.println(Flapper);
+
+       board2.setPWM(Flapper, 0, angleToPulse(allServoMin[Flapper]));
+       }
+       if (Flapper>31 && Flapper <40)
+       {
+       Serial.print("h=");
+       Serial.println(h);
+       Serial.println("Board_3"); 
+       Serial.print("Flapper=");
+       Serial.println(Flapper);
+
+       board3.setPWM(Flapper, 0, angleToPulse(allServoMin[Flapper]));      
+       }
+      }// h
+     }// v
       buttonPushed = 0;
     }
   

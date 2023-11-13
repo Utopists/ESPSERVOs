@@ -1,0 +1,47 @@
+#include <Arduino.h>
+
+// put function declarations here:
+int myFunction(int, int);
+
+void setup() {
+  // put your setup code here, to run once:
+  int result = myFunction(2, 3);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+      for (int h = 0; h < 5; ++h)
+    {
+      Serial.print(h);
+    for (int v = 0; v = 8; v = v + 8)
+    {
+      Serial.print(v);
+      if (h < 2 )
+       {
+       Serial.println("Board_1"); 
+       Serial.print("Servo ");
+       Serial.println(h+v);
+//       board1.setPWM(h+v, 0, angleToPulse(allServoMin[h+v]));
+       }
+       if (h > 2 && h < 4 )
+       { 
+       Serial.println("Board_2"); 
+       Serial.print("Servo ");
+       Serial.println(h+v);
+//       board2.setPWM(h+v, 0, angleToPulse(allServoMin[h+v]));
+       }
+       else
+       {
+       Serial.println("Board_3"); 
+       Serial.print("Servo ");
+       Serial.println(h+v);
+//       board3.setPWM(h+v, 0, angleToPulse(allServoMin[h+v]));      
+       }
+    }
+    }
+}
+
+// put function definitions here:
+int myFunction(int x, int y) {
+  return x + y;
+}
