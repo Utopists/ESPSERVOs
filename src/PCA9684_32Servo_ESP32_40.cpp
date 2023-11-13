@@ -122,7 +122,7 @@ int angleToPulse(int ang); // this is prototype of function defined at the end o
 #include <ESPmDNS.h>
 
 const char *ssid = "BT-THAJX6";
-const char *pass = "JdakXJ3AQHFLeP";
+const char *pass = "";
 
 
 //const char *ssid = "Ardvark";
