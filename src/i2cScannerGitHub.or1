@@ -1,5 +1,5 @@
 //esp32 i2c i2c_scanner
-//#include <Arduino.h>
+#include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_PWMServoDriver.h>
@@ -9,6 +9,11 @@
 
 #define SERVOMIN 125 // this is the 'minimum' pulse length count (out of 4096)
 #define SERVOMAX 575 // this is the 'maximum' pulse length count (out of 4096)
+
+Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);
+Adafruit_PWMServoDriver board2 = Adafruit_PWMServoDriver(0x41);
+Adafruit_PWMServoDriver board3 = Adafruit_PWMServoDriver(0x42);
+
 
 void setup()
 {

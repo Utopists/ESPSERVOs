@@ -26,7 +26,7 @@
 // This sketch tests the standard 7-bit addresses
 // Devices with higher bit address might not be seen properly.
 //
-
+#include <Arduino.h>
 #include <Wire.h>
 
 #include <PCA9684_32Servo_ESP32.h>
@@ -86,10 +86,4 @@ void loop()
       Serial.println(address,HEX);
     }    
   }
-  if (nDevices == 0)
-    Serial.println("No I2C devices found\n");
-  else
-    Serial.println("done\n");
-
-  delay(5000);           // wait 5 seconds for next scan
-}
+  

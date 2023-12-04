@@ -2,7 +2,8 @@
 #include <Wire.h>
 
 void setup() {
-  Serial.begin(115200);
+  //Serial.begin(115200);
+  Serial.begin(9600);
   Wire.begin();
 
   Serial.println("Scanning for I2C devices...");
@@ -17,9 +18,11 @@ void setup() {
       }
       Serial.println(address, HEX);
     }
+    delay(50);
   }
 }
-
 void loop() {
   // This is just a one-time scan, so there's no need for a loop.
+Serial.println("Finishing");
+delay(500);
 }

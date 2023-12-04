@@ -3,7 +3,7 @@
 //
 // Modified from https://playground.arduino.cc/Main/I2cScanner/
 // --------------------------------------
-
+#include <Arduino.h>
 #include <Wire.h>
 
 // Set I2C bus to use: Wire, Wire1, etc.
