@@ -126,7 +126,7 @@ int angleToPulse(int ang); // this is prototype of function defined at the end o
 #define CONNECTION_TIMEOUT 10
 
 const char *ssid = "BT-THAJX6";
-const char *pass = "JdakXJ3AQHFLeP";
+const char *pass = "";
 
 WebServer server(80);
 
