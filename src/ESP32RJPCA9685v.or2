@@ -103,6 +103,7 @@ int allServo =0;
 
 void handleServo();//this is prototype of function defined at the end of this code
 int angleToPulse(int ang); //this is prototype of function defined at the end of this code
+
 ////////////////////////PCA9685 ended
 
 #include "PCA9684_32Servo_ESP32.h"
@@ -118,8 +119,6 @@ const char *pass = "JdakXJ3AQHFLeP";
 WebServer server(80);
 
 const int led = 13;
-
-
 
 /////////////////////////////////////
 void handleRoot()
@@ -195,17 +194,25 @@ void setup()
     if (i < 16)
     {
       Serial.print("Set up Board 1");
+  // Check the address 0x40
+      checkI2CAddress(0x40);
+
       board1.setPWM(i, 0, angleToPulse(allServoPosition[i]) ); 
       //original with i
     }
     if (15 < i < 32)
     {
       Serial.print("Set up Board 2");
+
+
       board2.setPWM(i - 15, 0, angleToPulse(allServoPosition[i]));
     }
     else
     {
       Serial.print("Set up Board 3");
+   // Check the address 0x42
+      checkI2CAddress(0x42);
+
       board3.setPWM(i - 31, 0, angleToPulse(allServoPosition[i]));
     }
 
@@ -342,4 +349,3 @@ int angleToPulse(int ang){
    return pulse;
 }
 
- 
